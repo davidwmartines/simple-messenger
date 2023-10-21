@@ -1,0 +1,17 @@
+services:
+  redis:
+    image: redislabs/redismod
+    ports:
+      - '6379:6379'
+  web:
+    build:
+      context: .
+      target: builder
+    entrypoint: ["gunicorn", "app:app", "--worker-class", "gevent", "--bind", "0.0.0.0:8000"]
+    stop_signal: SIGINT
+    ports:
+      - '8000:8000'
+    volumes:
+      - .:/code
+    depends_on:
+      - redis
