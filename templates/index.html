@@ -11,9 +11,9 @@
     {% include 'message_list.html' %}
   </div>
 
-  <form>
+  <form hx-post="{{url_for('receive_input')}}" hx-swap="none">
     <input type="text" name="message" />
-    <input type="button" value="send" hx-post="{{url_for('receive_input')}}" />
+    <input type="submit" value="send" />
   </form>
   <script src="https://unpkg.com/htmx.org@1.9.6"
     integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni"
