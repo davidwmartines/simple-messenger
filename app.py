@@ -15,9 +15,14 @@ def index():
 
 
 @app.route("/input", methods=["POST"])
-def receive_input():
+async def receive_input():
     messages.append(request.form["message"])
-    messages.append(f"reply to {request.form['message']}")
+    reply = await get_reply(request.form["message"])
+    messages.append(reply)
     output = render_template("message_list.html", messages=messages)
     sse.publish(output, type="message_list")
     return Response("received", 201)
+
+
+async def get_reply(message):
+    return f"reply to {message}"
