@@ -8,7 +8,7 @@ services:
     build:
       context: .
       target: builder
-    entrypoint: ["gunicorn", "app:app", "--worker-class", "gevent", "--bind", "0.0.0.0:8000"]
+    entrypoint: ["gunicorn", "app:app", "--worker-class", "gevent", "--bind", "0.0.0.0:8000", "--reload"]
     stop_signal: SIGINT
     ports:
       - '8000:8000'
