@@ -21,7 +21,7 @@ async def receive_input():
     messages.append(reply)
     output = render_template("message_list.html", messages=messages)
     sse.publish(output, type="message_list")
-    return Response("received", 201)
+    return render_template("message_form.html")
 
 
 async def get_reply(message):
