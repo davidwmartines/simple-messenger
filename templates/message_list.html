@@ -1,6 +1,9 @@
 {% for message in messages %}
-<div {%if message.sender == user %} style="text-align: right;" {% endif %}>
-    {%if message.sender != user %} {{message.sender}}:&nbsp; {% endif %}
-    {{message.text}}
+<div class="message" {%if message.sender==user %} style="text-align: right;" {% endif %} {% if
+    message.sender=="_system_" %} style="font-style: italic;" {% endif %}>
+    {%if message.sender != user and message.sender !="_system_" %} {{message.sender}}:{% endif %}
+    <span {% if message.sender !="_system_" %} style="font-weight: bold;" {%endif %}>
+        {{message.text}}
+    </span>
 </div>
 {% endfor %}

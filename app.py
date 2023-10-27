@@ -15,15 +15,22 @@ app.config["SESSION_PERMANENT"] = False
 
 Session(app)
 
-# in-memory lists of all users and messages
-messages = []
-users = []
-
 
 @dataclass
 class Message:
     sender: str
     text: str
+
+
+# in-memory lists of all users and messages
+messages = []
+users = []
+
+
+def push_messages():
+    for user in users:
+        output = render_template("message_list.html", messages=messages, user=user)
+        sse.publish(output, type="message_list", channel=user)
 
 
 @app.route("/")
@@ -39,18 +46,26 @@ def login():
     user = request.form["name"]
     users.append(user)
     session["user"] = user
+    messages.append(Message("_system_", f"({user} joined!)"))
+    push_messages()
     return redirect(url_for("chat"))
 
 
 @app.route("/logout", methods=["POST"])
 def logout():
-    session.clear()
-    if request.headers.get("HX-Request"):
-        resp = Response()
-        resp.headers["HX-Redirect"] = url_for("index")
-        return resp
-    else:
-        return redirect(url_for("index"))
+    user = session.get("user")
+    if user is not None:
+        session.clear()
+
+        messages.append(Message("_system_", f"({user} left the chat)"))
+        push_messages()
+        
+        if request.headers.get("HX-Request"):
+            resp = Response()
+            resp.headers["HX-Redirect"] = url_for("index")
+            return resp
+
+    return redirect(url_for("index"))
 
 
 @app.route("/chat")
@@ -66,8 +81,6 @@ def chat():
 def receive_input():
     messages.append(Message(sender=session["user"], text=request.form["text"]))
 
-    for user in users:
-        output = render_template("message_list.html", messages=messages, user=user)
-        sse.publish(output, type="message_list", channel=user)
+    push_messages()
 
     return render_template("message_form.html")
