@@ -74,7 +74,7 @@ def chat():
     if user is None:
         return redirect(url_for("index"))
 
-    return render_template("index.html", messages=messages, user=user)
+    return render_template("chat.html", messages=messages, user=user)
 
 
 @app.route("/input", methods=["POST"])

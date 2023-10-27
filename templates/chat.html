@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div id="message-container" style="height: 200px; overflow: scroll;" hx-on:htmx:after-settle="scrollToLastMessage()"
+  hx-ext="sse" sse-connect="{{ url_for('sse.stream', channel=session['user']) }}" sse-swap="message_list">
+  {% include 'message_list.html' %}
+</div>
+
+{% include 'message_form.html' %}
+<a hx-post="{{url_for('logout')}}" hx-swap="none" href="#">Log out</a>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function scrollToLastMessage() {
+    e = document.getElementById('message-list-scroll-point');
+    if (e)
+      e.scrollIntoView(false);
+  }
+  window.addEventListener('load', function () {
+    scrollToLastMessage();
+  })
+</script>
+{%endblock%}
