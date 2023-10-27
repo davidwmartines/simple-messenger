@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div id="message-container" style="height: 200px; overflow: scroll;" hx-on:htmx:after-settle="scrollToLastMessage()"
+<div id="message-container" style="height: 300px; overflow-y: scroll;" hx-on:htmx:after-settle="scrollToLastMessage()"
   hx-ext="sse" sse-connect="{{ url_for('sse.stream', channel=session['user']) }}" sse-swap="message_list">
   {% include 'message_list.html' %}
 </div>
