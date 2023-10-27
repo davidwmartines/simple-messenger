@@ -1,28 +1,45 @@
-from flask import Flask, render_template, request, Response
+from flask import Flask, render_template, request, Response, session
 from flask_sse import sse
+from dataclasses import dataclass
+from uuid import uuid4
+from flask_session import Session
+import redis
 
 app = Flask(__name__)
+app.config["DEBUG"] = True
 app.config["REDIS_URL"] = "redis://redis"
 app.register_blueprint(sse, url_prefix="/stream")
 
-# in-memory list of all messages
+app.config["SESSION_TYPE"] = "redis"
+app.config["SESSION_REDIS"] = redis.from_url("redis://redis")
+
+Session(app)
+
+# in-memory lists of all users and messages
 messages = []
+users = []
+
+
+@dataclass
+class Message:
+    sender: str
+    text: str
 
 
 @app.route("/")
 def index():
-    return render_template("index.html", messages=messages)
+    user = str(uuid4())
+    users.append(user)
+    session["user"] = user
+    return render_template("index.html", messages=messages, user=user)
 
 
 @app.route("/input", methods=["POST"])
-async def receive_input():
-    messages.append(request.form["message"])
-    reply = await get_reply(request.form["message"])
-    messages.append(reply)
-    output = render_template("message_list.html", messages=messages)
-    sse.publish(output, type="message_list")
+def receive_input():
+    messages.append(Message(sender=session["user"], text=request.form["text"]))
+
+    for user in users:
+        output = render_template("message_list.html", messages=messages, user=user)
+        sse.publish(output, type="message_list", channel=user)
+
     return render_template("message_form.html")
-
-
-async def get_reply(message):
-    return f"reply to {message}"

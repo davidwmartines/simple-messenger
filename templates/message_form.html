@@ -1,4 +1,6 @@
-<form hx-post="{{url_for('receive_input')}}">
-    <input type="text" name="message" autofocus />
-    <input type="submit" value="send" />
-</form>
+<div style="text-align: right;">
+    <form hx-post="{{url_for('receive_input')}}">
+        <input type="text" name="text" autofocus />
+        <input type="submit" value="send" />
+    </form>
+</div>
