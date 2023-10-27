@@ -1,27 +1,10 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>SSE/HTMX Chat Demo</title>
-</head>
+{% block content %}
+<div hx-ext="sse" sse-connect="{{ url_for('sse.stream', channel=session['user']) }}" sse-swap="message_list">
+  {% include 'message_list.html' %}
+</div>
 
-<body>
+{% include 'message_form.html' %}
 
-  <div style="width: 400px; margin: auto;">
-    <h1>SSE/HTMX Chat Demo</h1>
-    <div hx-ext="sse" sse-connect="{{ url_for('sse.stream', channel=session['user']) }}" sse-swap="message_list">
-      {% include 'message_list.html' %}
-    </div>
-
-    {% include 'message_form.html' %}
-
-  </div>
-
-  <script src="https://unpkg.com/htmx.org@1.9.6"
-    integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni"
-    crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
-
-</body>
-
-</html>
+{% endblock %}

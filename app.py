@@ -1,7 +1,6 @@
-from flask import Flask, render_template, request, Response, session
+from flask import Flask, render_template, request, Response, session, redirect, url_for
 from flask_sse import sse
 from dataclasses import dataclass
-from uuid import uuid4
 from flask_session import Session
 import redis
 
@@ -12,6 +11,7 @@ app.register_blueprint(sse, url_prefix="/stream")
 
 app.config["SESSION_TYPE"] = "redis"
 app.config["SESSION_REDIS"] = redis.from_url("redis://redis")
+app.config["SESSION_PERMANENT"] = False
 
 Session(app)
 
@@ -28,9 +28,26 @@ class Message:
 
 @app.route("/")
 def index():
-    user = str(uuid4())
+    if session.get("user") is not None:
+        return redirect(url_for("chat"))
+    else:
+        return render_template("login.html")
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    user = request.form["name"]
     users.append(user)
     session["user"] = user
+    return redirect(url_for("chat"))
+
+
+@app.route("/chat")
+def chat():
+    user = session.get("user")
+    if user is None:
+        return redirect(url_for("index"))
+
     return render_template("index.html", messages=messages, user=user)
 
 

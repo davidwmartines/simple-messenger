@@ -1,3 +1,6 @@
 {% for message in messages %}
-<div {%if message.sender==user %} style="text-align: right;" {% endif %}>{{message.text}}</div>
+<div {%if message.sender == user %} style="text-align: right;" {% endif %}>
+    {%if message.sender != user %} {{message.sender}}:&nbsp; {% endif %}
+    {{message.text}}
+</div>
 {% endfor %}
