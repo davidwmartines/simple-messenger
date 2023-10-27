@@ -42,6 +42,17 @@ def login():
     return redirect(url_for("chat"))
 
 
+@app.route("/logout", methods=["POST"])
+def logout():
+    session.clear()
+    if request.headers.get("HX-Request"):
+        resp = Response()
+        resp.headers["HX-Redirect"] = url_for("index")
+        return resp
+    else:
+        return redirect(url_for("index"))
+
+
 @app.route("/chat")
 def chat():
     user = session.get("user")

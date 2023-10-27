@@ -6,5 +6,5 @@
 </div>
 
 {% include 'message_form.html' %}
-
+<a hx-post="{{url_for('logout')}}" hx-swap="none" href="#">Log out</a>
 {% endblock %}
